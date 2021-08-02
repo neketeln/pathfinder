@@ -26,6 +26,10 @@ public class PathService {
     return Math.toDegrees(Math.atan(ele / length));
   }
 
+  public double speed(double length, long time) {
+    return length / time;
+  }
+
   public double slope(double length, double ele) {
     return 100 * Math.tan(ele / length);
   }

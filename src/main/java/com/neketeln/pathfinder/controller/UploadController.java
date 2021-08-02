@@ -3,6 +3,7 @@ package com.neketeln.pathfinder.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,7 @@ public class UploadController {
       GPX gpx = new XmlMapper().readValue(file.getBytes(), GPX.class);
 
       List<List<Double>> elevations = new ArrayList<>();
+      List<List<Double>> speeds = new ArrayList<>();
       double distance = 0;
       elevations.add(List.of(0D, gpx.getTrack().getTrackSegments().get(0).getTrackPoints().get(0).getElevation(), 0D));
       for (int i = 1; i < gpx.getTrack().getTrackSegments().get(0).getTrackPoints().size(); i++) {
@@ -46,11 +48,15 @@ public class UploadController {
         double flatLength = pathService.haversine(current.getLatitude(), current.getLongitude(), previous.getLatitude(), previous.getLongitude());
         double realLength = pathService.length(flatLength, current.getElevation() - previous.getElevation());
         double angle = pathService.angle(flatLength, current.getElevation() - previous.getElevation());
+        long time = TimeUnit.SECONDS.convert(Math.abs(current.getTime().getTime() - previous.getTime().getTime()), TimeUnit.MILLISECONDS);
+        double speed = pathService.speed(realLength, time);
 
         distance += realLength;
         elevations.add(List.of(distance, current.getElevation(), angle));
+        speeds.add(List.of(distance, speed));
       }
       model.addAttribute("elevations", elevations);
+      model.addAttribute("speeds", speeds);
 
     } catch (IOException e) {
       e.printStackTrace();

@@ -1,5 +1,7 @@
 package com.neketeln.pathfinder.model;
 
+import java.util.Date;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
@@ -11,6 +13,9 @@ public class TrackPoint {
 
   @JacksonXmlProperty(localName = "ele")
   private double elevation;
+
+  @JacksonXmlProperty(localName = "time")
+  private Date time;
 
   @JacksonXmlProperty(localName = "lat", isAttribute = true)
   private double latitude;
@@ -34,6 +39,14 @@ public class TrackPoint {
     this.elevation = elevation;
   }
 
+  public Date getTime() {
+    return time;
+  }
+
+  public void setTime(Date time) {
+    this.time = time;
+  }
+
   public double getLatitude() {
     return latitude;
   }
@@ -48,10 +61,5 @@ public class TrackPoint {
 
   public void setLongitude(double longitude) {
     this.longitude = longitude;
-  }
-
-  @Override
-  public String toString() {
-    return "TrackPoint{" + "name='" + name + '\'' + ", elevation=" + elevation + ", latitude=" + latitude + ", longitude=" + longitude + '}';
   }
 }
