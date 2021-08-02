@@ -4,10 +4,9 @@
     <script type="text/javascript">
 
     google.charts.load('current', {
-      packages: ['corechart', 'line']
+      packages: ['corechart']
     });
     google.charts.setOnLoadCallback(drawElevationChart);
-    google.charts.setOnLoadCallback(drawSpeedChart);
 
     function drawElevationChart() {
 
@@ -15,18 +14,46 @@
       data.addColumn('number', 'Distance');
       data.addColumn('number', 'Elevation');
       data.addColumn('number', 'Angle');
+      data.addColumn('number', 'Speed');
       data.addRows([[${elevations}]]);
 
       var options = {
         width: 1600,
         height: 800,
-        lineWidth: 5,
+
         legend: 'none',
+        crosshair: { trigger: 'selection' },
+
+        series: {
+          0: {
+            targetAxisIndex: 0,
+            lineWidth: 5
+            },
+          1: {
+            targetAxisIndex: 1,
+            type: 'scatter',
+            pointsVisible: false,
+            enableInteractivity: false
+          }
+        },
+
+        vAxes: {
+          0: {title: 'Elevation'},
+          1: {title: 'Speed'}
+        },
+
         hAxis: {
           title: 'Distance'
         },
-        vAxis: {
-          title: 'Elevation'
+
+        trendlines: { 1:
+            {
+                type: 'polynomial',
+                degree: 12,
+                lineWidth: 10,
+                opacity: 0.2,
+                enableInteractivity: false
+            }
         }
       };
 
@@ -47,48 +74,20 @@
           },
           type: 'string',
           role: 'style'
-        }
+        }, 3
       ]);
 
       var chart = new google.visualization.LineChart(document.getElementById('elevation_chart'));
       chart.draw(dataView, options);
     }
 
-    function drawSpeedChart() {
 
-      var data = new google.visualization.DataTable();
-      data.addColumn('number', 'Distance');
-      data.addColumn('number', 'Speed');
-      data.addRows([[${speeds}]]);
-
-      var options = {
-        width: 1600,
-        height: 800,
-        legend: 'none',
-        trendlines: {
-          0: {
-            type: 'polynomial',
-            degree: 15
-          }
-        },
-        hAxis: {
-          title: 'Distance'
-        },
-        vAxis: {
-          title: 'Speed'
-        }
-      };
-
-      var chart = new google.visualization.ScatterChart(document.getElementById('speed_chart'));
-      chart.draw(data, options);
-    }
 
     </script>
 </head>
 <body>
 
 <div id="elevation_chart"></div>
-<div id="speed_chart"></div>
 
 </body>
 </html>

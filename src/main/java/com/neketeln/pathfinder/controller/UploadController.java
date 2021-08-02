@@ -38,9 +38,8 @@ public class UploadController {
       GPX gpx = new XmlMapper().readValue(file.getBytes(), GPX.class);
 
       List<List<Double>> elevations = new ArrayList<>();
-      List<List<Double>> speeds = new ArrayList<>();
       double distance = 0;
-      elevations.add(List.of(0D, gpx.getTrack().getTrackSegments().get(0).getTrackPoints().get(0).getElevation(), 0D));
+      elevations.add(List.of(0D, gpx.getTrack().getTrackSegments().get(0).getTrackPoints().get(0).getElevation(), 0D, 0D));
       for (int i = 1; i < gpx.getTrack().getTrackSegments().get(0).getTrackPoints().size(); i++) {
         TrackPoint current = gpx.getTrack().getTrackSegments().get(0).getTrackPoints().get(i);
         TrackPoint previous = gpx.getTrack().getTrackSegments().get(0).getTrackPoints().get(i - 1);
@@ -52,11 +51,9 @@ public class UploadController {
         double speed = pathService.speed(realLength, time);
 
         distance += realLength;
-        elevations.add(List.of(distance, current.getElevation(), angle));
-        speeds.add(List.of(distance, speed));
+        elevations.add(List.of(distance, current.getElevation(), angle, speed));
       }
       model.addAttribute("elevations", elevations);
-      model.addAttribute("speeds", speeds);
 
     } catch (IOException e) {
       e.printStackTrace();
