@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.5.2'
+	id 'org.springframework.boot' version '2.5.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'war'
@@ -15,12 +15,11 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.12.4'
 
 	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
 
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
+	testImplementation('org.springframework.boot:spring-boot-starter-test')
 }
 
 test {

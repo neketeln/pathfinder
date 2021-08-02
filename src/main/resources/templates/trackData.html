@@ -1,0 +1,91 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+    google.charts.load('current', {
+      packages: ['corechart', 'line']
+    });
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('number', 'Distance');
+      data.addColumn('number', 'Elevation');
+      data.addColumn('number', 'Angle');
+      data.addRows([[${elevations}]]);
+
+      var options = {
+        width: 1600,
+        height: 800,
+        hAxis: {
+          title: 'Distance'
+        },
+        vAxis: {
+          title: 'Elevation'
+        }
+      };
+
+      var dataView = new google.visualization.DataView(data);
+      dataView.setColumns([
+        // reference existing columns by index
+        0, 1,
+        // add function for line color
+        {
+          calc: function(data, row) {
+            var validAngle = '#0000FF';
+            var invalidAngle = '#FF0000';
+
+            if ((data.getValue(row, 2) >= 20) || (data.getValue(row, 2) <= -20)) {
+              return invalidAngle;
+            }
+            return validAngle;
+          },
+          type: 'string',
+          role: 'style'
+        }
+      ]);
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+      chart.draw(dataView, options);
+    }
+
+    </script>
+</head>
+<body>
+
+<div id="chart_div"></div>
+
+<div th:if="${waypoints}">
+    <ul>
+        <li th:each="waypoint : ${waypoints}" th:text="${waypoint}"/>
+    </ul>
+</div>
+
+<div th:if="${trackpoints}">
+    <ul>
+        <li th:each="trackpoint : ${trackpoints}" th:text="${trackpoint}"/>
+    </ul>
+</div>
+
+<div th:if="${lengths}">
+    <ul>
+        <li th:each="length : ${lengths}" th:text="${length}"/>
+    </ul>
+</div>
+
+<div th:if="${angles}">
+    <ul>
+        <li th:each="angle : ${angles}" th:text="${angle}"/>
+    </ul>
+</div>
+
+<div th:if="${slopes}">
+    <ul>
+        <li th:each="slope : ${slopes}" th:text="${slope}"/>
+    </ul>
+</div>
+
+</body>
+</html>
