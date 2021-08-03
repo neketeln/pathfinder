@@ -6,16 +6,17 @@
     google.charts.load('current', {
       packages: ['corechart']
     });
-    google.charts.setOnLoadCallback(drawElevationChart);
+    google.charts.setOnLoadCallback(drawTrackDataChart);
 
-    function drawElevationChart() {
+    function drawTrackDataChart() {
 
       var data = new google.visualization.DataTable();
       data.addColumn('number', 'Distance');
       data.addColumn('number', 'Elevation');
       data.addColumn('number', 'Angle');
       data.addColumn('number', 'Speed');
-      data.addRows([[${elevations}]]);
+      data.addColumn('number', 'Time');
+      data.addRows([[${trackData}]]);
 
       var options = {
         width: 1600,
@@ -54,21 +55,39 @@
                 opacity: 0.2,
                 enableInteractivity: false
             }
-        }
+        },
+
+        explorer: {
+            actions: ['dragToZoom', 'rightClickToReset'],
+            maxZoomIn: 0.05,
+        },
       };
 
       var dataView = new google.visualization.DataView(data);
       dataView.setColumns([
         // reference existing columns by index
         0, 1,
-        // add function for line color
+        {
+          calc: function(data, row) {
+            return 'Distance: ' + round(data.getValue(row, 0)) + ' m\n' +
+              'Elevation: ' + round(data.getValue(row, 1)) + ' m\n' +
+              'Angle: ' + round(data.getValue(row, 2)) + '\xB0\n' +
+              'Speed: ' + round(data.getValue(row, 3)) + ' m/s\n' +
+              'Elapsed Time: ' + getElapsedTime(data.getValue(row, 4));
+          },
+          type: 'string',
+          role: 'tooltip'
+        },
         {
           calc: function(data, row) {
             var validAngle = '#0000FF';
-            var invalidAngle = '#FF0000';
+            var warningAngle = '#FFFF00';
+            var alarmAngle = '#FF0000';
 
-            if ((data.getValue(row, 2) >= 20) || (data.getValue(row, 2) <= -20)) {
-              return invalidAngle;
+            if ((data.getValue(row, 2) >= 25) || (data.getValue(row, 2) <= -25)) {
+              return alarmAngle;
+            } else if ((data.getValue(row, 2) >= 15) || (data.getValue(row, 2) <= -15)) {
+              return warningAngle;
             }
             return validAngle;
           },
@@ -77,17 +96,23 @@
         }, 3
       ]);
 
-      var chart = new google.visualization.LineChart(document.getElementById('elevation_chart'));
+      var chart = new google.visualization.LineChart(document.getElementById('trackData_chart'));
       chart.draw(dataView, options);
     }
 
+    function round(number) {
+        return Math.round((number + Number.EPSILON) * 100) / 100;
+    }
 
+    function getElapsedTime(seconds) {
+        return new Date(seconds * 1000).toISOString().substr(11, 8);
+    }
 
     </script>
 </head>
 <body>
 
-<div id="elevation_chart"></div>
+<div id="trackData_chart" style="width:1600px; margin:0px auto;"></div>
 
 </body>
 </html>
